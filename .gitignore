@@ -1,0 +1,15 @@
+# Ignore everything
+*
+
+# Allow Python and Jupyter Notebook files
+!*.py
+!*.ipynb
+
+# Allow directories (so folder structure is maintained)
+!*/
+
+# Ignore the virtual environment
+venv/
+
+# Allow .gitignore itself
+!.gitignore
