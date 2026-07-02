@@ -34,9 +34,10 @@ def chatbot_page():
     except Exception as e:
         st.error(
             "⚠️ Chatbot is unavailable — the Blenderbot model weights aren't installed "
-            "(only the tokenizer files ship in this repo). Run `model_install.py` or download "
-            "`facebook/blenderbot-3B` into `models/model_blenderbot`. The rest of the app works "
-            "fine without this."
+            "(only the tokenizer files ship in this repo). Run `python model_install.py` from "
+            "`task-3/` to download `facebook/blenderbot_small-90M` into `models/model_blenderbot` "
+            "(and Phi-1.5 for the Part Finder's AI explanations). The rest of the app works fine "
+            "without this."
         )
         st.caption(f"Details: {e}")
         return
