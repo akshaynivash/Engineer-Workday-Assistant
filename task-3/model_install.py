@@ -1,33 +1,43 @@
-# from transformers import BlenderbotSmallTokenizer, BlenderbotSmallForConditionalGeneration
+"""Downloads the model weights the app expects locally, into models/.
 
-# # Specify the model name
-# model_name = "facebook/blenderbot_small-90M"
+Only tokenizer files ship in this repo (models/model_blenderbot/merges.txt,
+models/phi-1.5/merges.txt) -- run this once to get the actual weights.
+"""
 
-# # Download and save the tokenizer and model locally
-# tokenizer = BlenderbotSmallTokenizer.from_pretrained(model_name)
-# model = BlenderbotSmallForConditionalGeneration.from_pretrained(model_name)
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BlenderbotSmallForConditionalGeneration,
+    BlenderbotSmallTokenizer,
+)
 
-# # Save the model and tokenizer to a local directory
-# save_directory = "model"
-# tokenizer.save_pretrained(save_directory)
-# model.save_pretrained(save_directory)
+# chatbot.py loads this with BlenderbotSmallTokenizer/BlenderbotSmallForConditionalGeneration --
+# those classes are for the "small" variant specifically. "facebook/blenderbot-3B" (the large
+# model, mentioned in the original README) uses a different class entirely (BlenderbotTokenizer/
+# BlenderbotForConditionalGeneration, no "Small") and would not load correctly here.
+BLENDERBOT_MODEL = "facebook/blenderbot_small-90M"
+BLENDERBOT_DIR = "models/model_blenderbot"
 
-# print(f"Model and tokenizer saved to {save_directory}")
+PHI_MODEL = "microsoft/phi-1_5"
+PHI_DIR = "models/phi-1.5"
 
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+def download_blenderbot():
+    tokenizer = BlenderbotSmallTokenizer.from_pretrained(BLENDERBOT_MODEL)
+    model = BlenderbotSmallForConditionalGeneration.from_pretrained(BLENDERBOT_MODEL)
+    tokenizer.save_pretrained(BLENDERBOT_DIR)
+    model.save_pretrained(BLENDERBOT_DIR)
+    print(f"Blenderbot saved to {BLENDERBOT_DIR}")
 
-# Specify the Phi-1.5 model
-model_name = "microsoft/phi-1_5"
 
-# Download and cache the model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+def download_phi():
+    tokenizer = AutoTokenizer.from_pretrained(PHI_MODEL)
+    model = AutoModelForCausalLM.from_pretrained(PHI_MODEL)
+    tokenizer.save_pretrained(PHI_DIR)
+    model.save_pretrained(PHI_DIR)
+    print(f"Phi-1.5 saved to {PHI_DIR}")
 
-# Save the model and tokenizer to a local directory (optional)
-save_directory = "models/phi-1.5"
-tokenizer.save_pretrained(save_directory)
-model.save_pretrained(save_directory)
 
-print(f"Model and tokenizer saved to {save_directory}")
-
+if __name__ == "__main__":
+    download_blenderbot()
+    download_phi()
