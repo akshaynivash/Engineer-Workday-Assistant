@@ -100,8 +100,8 @@ async def explain_part(part_id: str, payload: ExplainRequest):
             f"{alternative['Rated Current (A)']}, rated voltage of {alternative['Rated Voltage (V)']}, and "
             f"breaking capacity of {alternative['Rated Breaking Capacity (A)']} is a suitable replacement for "
             f"the original part with a {part['Attribut1']} fuse type, rated current of {part['Rated Current (A)']}, "
-            f"rated voltage of {part['Rated Voltage (V)']}, and breaking capacity of {part['Rated Breaking Capacity (A)']}. "
-            f"The mounting type is {alternative['Mounting']}."
+            f"rated voltage of {part['Rated Voltage (V)']}, and breaking capacity of "
+            f"{part['Rated Breaking Capacity (A)']}. The mounting type is {alternative['Mounting']}."
         )
         explanation = await _ai_explanation_or_503(prompt)
     else:

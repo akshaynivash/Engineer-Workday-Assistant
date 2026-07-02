@@ -21,7 +21,8 @@ def store_task(collection, task: str, answer: str, day: str | None = None) -> st
         day = datetime.now().strftime("%Y-%m-%d")
     doc_id = f"{task}-{datetime.now().isoformat()}"
     document_content = f"Task: {task}\nAnswer: {answer}\nDate: {day}"
-    collection.add(ids=[doc_id], documents=[document_content], metadatas={"day": day, "timestamp": datetime.now().isoformat()})
+    metadata = {"day": day, "timestamp": datetime.now().isoformat()}
+    collection.add(ids=[doc_id], documents=[document_content], metadatas=metadata)
     return f"Task '{task}' stored successfully for {day}!"
 
 

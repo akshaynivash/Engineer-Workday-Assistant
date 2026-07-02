@@ -73,7 +73,9 @@ def rule_based_justification(
     if abs(float(str(alt_rated_current).replace("A", "")) - float(str(rated_current).replace("A", ""))) <= 1:
         explanation += f"Its current rating ({alt_rated_current}A) is close to the original, ensuring safe operation. "
     else:
-        explanation += f"It has a higher/lower current rating ({alt_rated_current}A) but still fits within tolerance limits. "
+        explanation += (
+            f"It has a higher/lower current rating ({alt_rated_current}A) but still fits within tolerance limits. "
+        )
 
     if abs(float(str(alt_rated_voltage).replace("V", "")) - float(str(rated_voltage).replace("V", ""))) <= 10:
         explanation += f"The voltage rating is within the acceptable ±10% range ({alt_rated_voltage}V). "
