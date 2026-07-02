@@ -11,6 +11,9 @@
 # Allow the (synthetic) parts dataset the app depends on to run
 !data/Partscleaned.csv
 
+# Allow CI workflow config
+!.github/workflows/*.yml
+
 # Allow directories (so folder structure is maintained)
 !*/
 

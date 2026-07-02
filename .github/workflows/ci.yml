@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Full requirements.txt pulls in torch/transformers/langchain/pinecone --
+      # slow and unnecessary for what's actually tested here. The tests only
+      # touch pure pandas logic (matching engine) and ChromaDB (a local,
+      # embedded DB with no external credentials) -- Pinecone/Ollama-dependent
+      # code isn't reachable in CI without live credentials, so it's compile-
+      # checked for syntax only, not executed.
+      - name: Install lean test dependencies
+        run: pip install pandas pytest chromadb
+
+      - name: Compile-check every Python file
+        run: python -m py_compile $(find . -name "*.py" -not -path "./.git/*")
+
+      - name: Run tests
+        run: python -m pytest tests/ -v
