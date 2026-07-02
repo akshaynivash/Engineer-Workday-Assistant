@@ -156,7 +156,12 @@ def _get_services():
 
 
 def personal_assistant_page():
-    st.title("🦙 Personal Assistant (Chat, Study, Meal Plan & Daily Tasks)")
+    st.title("🦙 Personal Assistant")
+    st.caption(
+        "A bonus sidekick, separate from part-finding: ask about your schedule, get a meal plan, "
+        "get study help on indexed material, or just chat — a LangChain agent figures out which of "
+        "those you mean instead of relying on exact keywords."
+    )
 
     try:
         agent, tasks_collection = _get_services()
@@ -174,6 +179,7 @@ def personal_assistant_page():
 
     if mode == "Daily Tasks":
         st.header("Daily Tasks Check-In")
+        st.caption("A simple daily journal/checklist, stored in ChromaDB — log a task and how it went.")
 
         st.subheader("Store a Single Task")
         single_task = st.text_input("Task:", key="single_task")
@@ -201,6 +207,10 @@ def personal_assistant_page():
         return
 
     st.header("Chat with Your Assistant")
+    st.caption(
+        "Try: *\"What's my schedule for Monday?\"* · *\"Plan my meals for this week\"* · "
+        "*\"Explain today's topic from the study material\"* · or just say hi."
+    )
     if "assistant_messages" not in st.session_state:
         st.session_state.assistant_messages = [
             {"role": "assistant", "content": "Hello! How are you doing today? How may I assist you?"}

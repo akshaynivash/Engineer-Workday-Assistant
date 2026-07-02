@@ -27,7 +27,12 @@ def generate_response(model, tokenizer, device, prompt: str) -> str:
 
 
 def chatbot_page():
-    st.title("💬 Personal Assistant Chatbot (Offline + CUDA)")
+    st.title("💬 Chatbot")
+    st.caption(
+        "General offline conversation — not for finding parts (use 🔍 Alternative Part Finder for "
+        "that) or task/schedule/meal help (use 🦙 Personal Assistant). Just casual chat, runs fully "
+        "locally once the model is downloaded."
+    )
 
     try:
         model, tokenizer, device = load_model()
