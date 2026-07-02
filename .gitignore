@@ -1,24 +1,29 @@
-# Ignore everything
-*
-
-# Allow Python and Jupyter Notebook files
-!*.py
-!*.ipynb
-!*.md
-!*.txt
-!report.pdf
-
-# Allow the (synthetic) parts dataset the app depends on to run
-!data/Partscleaned.csv
-
-# Allow CI workflow config
-!.github/workflows/*.yml
-
-# Allow directories (so folder structure is maintained)
-!*/
-
-# Ignore the virtual environment
+# Python
+__pycache__/
+*.pyc
+.venv/
 venv/
+.pytest_cache/
+.ruff_cache/
 
-# Allow .gitignore itself
-!.gitignore
+# Node / frontend build output
+node_modules/
+frontend/dist/
+
+# Local env files (commit .env.example instead)
+.env
+!.env.example
+
+# Runtime-generated data (rebuilt automatically, not source)
+data/chroma_db/
+data/faiss_index/
+
+# Large model weights (only tokenizer files like merges.txt are small enough to ship)
+task-3/models/*/*.bin
+task-3/models/*/*.safetensors
+task-3/models/*/pytorch_model*
+task-3/models/*/model.safetensors*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
