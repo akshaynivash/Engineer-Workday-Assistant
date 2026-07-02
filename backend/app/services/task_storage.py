@@ -23,3 +23,8 @@ def store_task(collection, task: str, answer: str, day: str | None = None) -> st
     document_content = f"Task: {task}\nAnswer: {answer}\nDate: {day}"
     collection.add(ids=[doc_id], documents=[document_content], metadatas={"day": day, "timestamp": datetime.now().isoformat()})
     return f"Task '{task}' stored successfully for {day}!"
+
+
+def get_recent_tasks(collection, n: int = 5) -> list[str]:
+    results = collection.get(limit=n)
+    return results["documents"] if results["documents"] else []

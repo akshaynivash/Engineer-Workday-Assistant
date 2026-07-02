@@ -3,17 +3,11 @@
 Pure pandas logic -- no external services, safe to run in CI.
 """
 
-import sys
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "task-3"))
-
-from utils.find_alternative_parts_balanced import find_alternative_parts_balanced  # noqa: E402
-
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "Partscleaned.csv"
+from app.data import PARTS_CSV
+from app.services.filtering import find_alternative_parts_balanced
 
 REQUIRED_COLUMNS = {
     "ID",
@@ -30,7 +24,7 @@ REQUIRED_COLUMNS = {
 
 @pytest.fixture(scope="module")
 def df():
-    data = pd.read_csv(DATA_PATH)
+    data = pd.read_csv(PARTS_CSV)
     data.columns = data.columns.str.strip()
     return data
 
