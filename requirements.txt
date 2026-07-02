@@ -14,10 +14,10 @@ tqdm
 accelerate
 transformers
 sentencepiece
-pinecone
-langchain
-langchain_pinecone
+langchain_community
 langchain_ollama
+faiss-cpu
+pypdf
 
 # Install PyTorch with CUDA manually (Uncomment and install based on CUDA version)
 # Run the following before installing requirements.txt:
