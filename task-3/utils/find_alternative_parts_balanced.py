@@ -16,7 +16,7 @@ def find_alternative_parts_balanced(selected_part, df, min_alternatives=5, relax
     selected_fuse_type = selected_part["Attribut1"].strip().lower() if pd.notna(selected_part["Attribut1"]) else None
 
     # Remove rows with missing fuse types
-    df = df.dropna(subset=["Attribut1"])
+    df = df.dropna(subset=["Attribut1"]).copy()
 
     # Convert numerical columns safely
     df["Rated Current (A)"] = pd.to_numeric(df["Rated Current (A)"].astype(str).str.replace("A", ""), errors='coerce')
@@ -27,11 +27,11 @@ def find_alternative_parts_balanced(selected_part, df, min_alternatives=5, relax
     df["Rated Breaking Capacity (A)"] = pd.to_numeric(df["Rated Breaking Capacity (A)"].astype(str).str.replace("A", ""), errors='coerce')
 
     # Fill missing numerical values with the median
-    df["Rated Voltage (V)"].fillna(df["Rated Voltage (V)"].median(), inplace=True)
+    df["Rated Voltage (V)"] = df["Rated Voltage (V)"].fillna(df["Rated Voltage (V)"].median())
     if "Rated Voltage (VDC)" in df.columns:
-        df["Rated Voltage (VDC)"].fillna(df["Rated Voltage (VDC)"].median(), inplace=True)
+        df["Rated Voltage (VDC)"] = df["Rated Voltage (VDC)"].fillna(df["Rated Voltage (VDC)"].median())
 
-    df["Rated Breaking Capacity (A)"].fillna(df["Rated Breaking Capacity (A)"].median(), inplace=True)
+    df["Rated Breaking Capacity (A)"] = df["Rated Breaking Capacity (A)"].fillna(df["Rated Breaking Capacity (A)"].median())
 
     # Convert selected values to float safely
     selected_voltage_ac = pd.to_numeric(str(selected_voltage_ac).replace("V", ""), errors='coerce')
@@ -53,8 +53,12 @@ def find_alternative_parts_balanced(selected_part, df, min_alternatives=5, relax
     if "Rated Voltage (VDC)" in df.columns and selected_voltage_dc is not None:
         df = df[df["Rated Voltage (VDC)"] >= selected_voltage_dc]  # Ensure only equal or higher DC voltage
 
-    # Ensure only exact fuse type matches
-    df = df[df["Attribut1"].str.lower() == selected_fuse_type]
+    # Fuse type is required to match for every tier EXCEPT Tier 5, which explicitly
+    # allows different fuse types. (Previously this filter ran unconditionally before
+    # any tier logic, so "Tier 5: Allow Different Fuse Types" could never actually
+    # relax it -- it behaved identically to Tier 3/4.)
+    if relaxation_tier != "Tier 5":
+        df = df[df["Attribut1"].str.lower() == selected_fuse_type]
 
     # 🛠 **Tier 1: Strict Matching (Fuse Type + Exact Electrical & Mechanical Match)**
     if relaxation_tier == "Tier 1":
@@ -63,25 +67,23 @@ def find_alternative_parts_balanced(selected_part, df, min_alternatives=5, relax
             (df["Rated Breaking Capacity (A)"].between(selected_breaking_capacity * 0.9, selected_breaking_capacity * 1.1)) &
             (df["Mounting"] == selected_mounting)
         ]
-    # 🛠 **Tier 2: Allow Minor Breaking Capacity Variations**
+    # 🛠 **Tier 2: Allow Minor Breaking Capacity Variations (mounting no longer required)**
     elif relaxation_tier == "Tier 2":
         alternatives = df[
             (df["Rated Current (A)"].between(selected_current - 2, selected_current + 2)) &
             (df["Rated Breaking Capacity (A)"].between(selected_breaking_capacity * 0.8, selected_breaking_capacity * 1.2))
         ]
-    # 🛠 **Tier 3: Relax Current Tolerance Further (±5A)**
-    elif relaxation_tier == "Tier 3":
+    # 🛠 **Tier 3/4: Relax Current Tolerance Further (±5A).** Tier 4's "different mounting"
+    # framing is already true from Tier 2 onward -- there's no further mounting constraint
+    # left to drop, so these two tiers are intentionally identical rather than duplicated
+    # by accident.
+    elif relaxation_tier in ("Tier 3", "Tier 4"):
         alternatives = df[
             (df["Rated Current (A)"].between(selected_current - 5, selected_current + 5)) &
             (df["Rated Breaking Capacity (A)"].between(selected_breaking_capacity * 0.8, selected_breaking_capacity * 1.2))
         ]
-    # 🛠 **Tier 4: Allow Different Mounting Styles**
-    elif relaxation_tier == "Tier 4":
-        alternatives = df[
-            (df["Rated Current (A)"].between(selected_current - 5, selected_current + 5)) &
-            (df["Rated Breaking Capacity (A)"].between(selected_breaking_capacity * 0.8, selected_breaking_capacity * 1.2))
-        ]
-    # 🛠 **Tier 5: Allow Different Fuse Types**
+    # 🛠 **Tier 5: Allow Different Fuse Types** -- same numeric tolerances as Tier 3/4, but
+    # `df` here was never filtered down to a single fuse type above.
     elif relaxation_tier == "Tier 5":
         alternatives = df[
             (df["Rated Current (A)"].between(selected_current - 5, selected_current + 5)) &
