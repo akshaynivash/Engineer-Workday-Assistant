@@ -8,6 +8,9 @@
 !*.txt
 !report.pdf
 
+# Allow the (synthetic) parts dataset the app depends on to run
+!data/Partscleaned.csv
+
 # Allow directories (so folder structure is maintained)
 !*/
 
