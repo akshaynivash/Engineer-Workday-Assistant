@@ -1,15 +1,16 @@
 import streamlit as st
 from utils.chatbot import chatbot_page
 from utils.alternate_part import alternative_part_page
-from utils.alternate_part_without_genai import alternative_part_pagenogenai
+from utils.personal_assistant import personal_assistant_page
+
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select a Page", ["💬 Chatbot", "🔍 Alternative Part Finder","Alternative part- nogenai"])
+page = st.sidebar.radio("Select a Page", ["💬 Chatbot", "🔍 Alternative Part Finder", "🦙 Personal Assistant"])
 
 # Page Routing
 if page == "💬 Chatbot":
     chatbot_page()
 elif page == "🔍 Alternative Part Finder":
     alternative_part_page()
-elif page == "Alternative part- nogenai":
-    alternative_part_pagenogenai()
+elif page == "🦙 Personal Assistant":
+    personal_assistant_page()
