@@ -13,23 +13,12 @@ paraphrasing the exact keywords didn't anticipate.
 """
 
 import os
-from datetime import datetime
 
 import streamlit as st
 
-GREETINGS = {"hi", "hello", "hey", "greetings", "how are you?"}
+from utils.task_storage import DAILY_TASKS, store_task
 
-DAILY_TASKS = [
-    "Complete Duolingo",
-    "Take vitamins",
-    "Drink 3 L water",
-    "Snapscore check",
-    "Prepare a topic for stat exam",
-    "Surf new tech update",
-    "Good moment of a day",
-    "Bad moment of a day",
-    "Today's affirmation",
-]
+GREETINGS = {"hi", "hello", "hey", "greetings", "how are you?"}
 
 REACT_PROMPT_TEMPLATE = """Answer the following questions as best you can. You have access to the following tools:
 
@@ -181,15 +170,6 @@ def _get_services():
     return agent_executor, tasks_collection
 
 
-def _store_task(collection, task: str, answer: str, day: str | None = None) -> str:
-    if not day:
-        day = datetime.now().strftime("%Y-%m-%d")
-    doc_id = f"{task}-{datetime.now().isoformat()}"
-    document_content = f"Task: {task}\nAnswer: {answer}\nDate: {day}"
-    collection.add(ids=[doc_id], documents=[document_content], metadatas={"day": day, "timestamp": datetime.now().isoformat()})
-    return f"Task '{task}' stored successfully for {day}!"
-
-
 def personal_assistant_page():
     st.title("🦙 Personal Assistant (Chat, Study, Meal Plan & Daily Tasks)")
 
@@ -215,7 +195,7 @@ def personal_assistant_page():
         single_day = st.text_input("Day (YYYY-MM-DD)", value="", key="single_day")
         if st.button("Save Single Task"):
             if single_task and single_answer:
-                st.write(_store_task(tasks_collection, single_task, single_answer, single_day or None))
+                st.write(store_task(tasks_collection, single_task, single_answer, single_day or None))
             else:
                 st.warning("Please provide both a task and an answer.")
 
@@ -225,7 +205,7 @@ def personal_assistant_page():
         if st.button("Save All Listed Tasks"):
             for task_name, answer in responses.items():
                 if answer:
-                    _store_task(tasks_collection, task_name, answer, day_for_all or None)
+                    store_task(tasks_collection, task_name, answer, day_for_all or None)
             st.success("All entered tasks have been saved!")
 
         st.subheader("Show Recent Tasks")
